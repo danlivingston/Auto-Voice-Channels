@@ -94,10 +94,22 @@ def write_json(fp, data, indent=1):
 def get_config():
     cf = os.path.join(cfg.SCRIPT_DIR, 'config.json')
     if not os.path.exists(cf):
-        print("Config file doesn't exist!")
+        print("Config file doesn't exist!\n"
+              "You need to create a 'config.json' file next to this script and fill in some details like your token.\n"
+              "Read the instructions on GitHub: https://github.com/gregzaal/Auto-Voice-Channels")
         import sys
         sys.exit(0)
     return read_json(cf)
+
+
+@func_timer()
+def set_config(data):
+    cf = os.path.join(cfg.SCRIPT_DIR, 'config.json')
+    if not os.path.exists(cf):
+        print("Config file doesn't exist!")
+        import sys
+        sys.exit(0)
+    return write_json(cf, data, indent=4)
 
 
 @func_timer()
@@ -113,8 +125,8 @@ def update_server_location():
 
 
 @func_timer()
-def get_serv_settings(guild):
-    if guild.id in cfg.GUILD_SETTINGS:
+def get_serv_settings(guild, force_refetch=False):
+    if guild.id in cfg.GUILD_SETTINGS and not force_refetch:
         cfg.PREV_GUILD_SETTINGS[guild.id] = deepcopy(cfg.GUILD_SETTINGS[guild.id])
         return cfg.GUILD_SETTINGS[guild.id]
 
@@ -258,15 +270,22 @@ def num_active_channels(guilds):
 
 
 @func_timer()
-def num_active_guilds(guilds):
+def guild_is_active(g):
     curtime = time()
+    settings = get_serv_settings(g)
+    if 'last_activity' in settings:
+        age = curtime - settings['last_activity']
+        if age / 604800 <= 6:  # 6 Weeks
+            return True
+    return False
+
+
+@func_timer()
+def num_active_guilds(guilds):
     num_guilds = 0
     for g in guilds:
-        settings = get_serv_settings(g)
-        if 'last_activity' in settings:
-            age = curtime - settings['last_activity']
-            if age / 604800 <= 3:  # 3 Weeks
-                num_guilds += 1
+        if guild_is_active(g):
+            num_guilds += 1
     return num_guilds
 
 
@@ -435,6 +454,8 @@ def eval_expression(text, is_sapphire, creator, party, game_name):
         'ROLE': [r.id for r in creator.roles],
         'LIVE': ((creator.voice and hasattr(creator.voice, 'self_stream') and creator.voice.self_stream) or
                  (act and act.type == discord.ActivityType.streaming)),
+        'LIVE_DISCORD': creator.voice and hasattr(creator.voice, 'self_stream') and creator.voice.self_stream,
+        'LIVE_EXTERNAL': act and act.type == discord.ActivityType.streaming,
         'GAME': game_name,
     }
     if is_sapphire:
