@@ -9,11 +9,15 @@
 
 ## Requires:
 
-* [Python 3.5.3+](https://www.python.org/downloads/)
+* [Python 3.7+](https://www.python.org/downloads/)
 * [discord.py](https://pypi.org/project/discord.py/) (`pip install discord.py`)
 * [pytz](https://pypi.org/project/pytz/) (`pip install pytz`)
 * [psutil](https://pypi.org/project/psutil/) (`pip install psutil`)
 * [Requests](https://pypi.org/project/requests/) (`pip install requests`)
+
+## Optional Extras:
+
+* [uvloop](https://pypi.org/project/uvloop/) (`pip install uvloop`) - **UNIX ONLY**
 
 ## Quick start:
 
@@ -48,4 +52,6 @@
 
 ## Help:
 
-[Join the support server](https://discord.gg/HT6GNhJ) and ask, or [open an issue](https://github.com/gregzaal/Auto-Voice-Channels/issues).
+For **all** issues and questions you have, first ask in our [Support Server](https://discord.gg/HT6GNhJ). 99% of questions have been asked before and already have a solution available. Read the FAQ, #status channel, and pinned messages.
+
+If you're self-hosting and have an actual code bug to report, also first check in the Support Server for a solution and see if anyone else has the same problem. If someone can confirm your bug in their own self-hosted bot, then you may [open an issue](https://github.com/gregzaal/Auto-Voice-Channels/issues).
